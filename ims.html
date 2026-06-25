@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANSCER ROBOTICS — IMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #011f40;
+      --primary-hover: #011f40e6;
+      --secondary: #005ead;
+      --accent-primary3: #007be3;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", sans-serif;
+      background: #f7f8fc;
+      color: #14142b;
+      min-height: 100vh;
+    }
+
+    /* ── page shell ── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1rem 4rem;
+    }
+
+    /* ── card ── */
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 32px rgba(1, 31, 64, 0.08);
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      margin: 0 0 0.25rem;
+      letter-spacing: -0.3px;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--secondary);
+      text-align: center;
+      margin: 0 0 1.75rem;
+    }
+
+    /* ── skip checkbox ── */
+    .skip-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .skip-row input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    .skip-row label {
+      font-size: 13px;
+      color: #4e4b66;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* ── form fields ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+    }
+    .field.full { grid-column: 1 / -1; }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #6e7191;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .field input,
+    .field textarea {
+      font-family: "Inter", sans-serif;
+      font-size: 14px;
+      color: #14142b;
+      background: #f7f8fc;
+      border: 1px solid #d9dbe9;
+      border-radius: 6px;
+      padding: 0.6rem 0.75rem;
+      outline: none;
+      transition: border-color 0.15s ease;
+      width: 100%;
+    }
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--accent-primary3);
+      background: #fff;
+    }
+    .field input.invalid,
+    .field textarea.invalid {
+      border-color: #e53935;
+    }
+    .field textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .error-msg {
+      font-size: 11px;
+      color: #e53935;
+      margin-top: 3px;
+      min-height: 15px;
+    }
+
+    /* ── buttons ── */
+    .btn-primary {
+      display: block;
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-family: "Inter", sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      margin-top: 0.5rem;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── hidden ── */
+    .d-none { display: none !important; }
+
+    /* ── success state ── */
+    .success-msg {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 14px;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+      .field.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <h1 class="card-title">ANSCER ROBOTICS</h1>
+      <p class="card-subtitle">Every question has an ANSCER</p>
+
+      <!-- skip checkbox -->
+      <div class="skip-row">
+        <input type="checkbox" id="skipCheck" />
+        <label for="skipCheck">Check this to skip details &amp; direct Download</label>
+      </div>
+
+      <!-- direct download button (shown only when skip is checked) -->
+      <button id="btnSkip" class="btn-primary d-none" type="button">
+        Download Flyer
+      </button>
+
+      <!-- main form -->
+      <form id="imsForm" novalidate>
+        <div class="form-row">
+          <div class="field full">
+            <label for="company">Company</label>
+            <input type="text" id="company" name="Company" placeholder="Your company" />
+            <span class="error-msg" id="err-company"></span>
+          </div>
+
+          <div class="field">
+            <label for="firstName">First Name <span style="color:#e53935">*</span></label>
+            <input type="text" id="firstName" name="First Name" placeholder="First name" />
+            <span class="error-msg" id="err-firstName"></span>
+          </div>
+
+          <div class="field">
+            <label for="lastName">Last Name <span style="color:#e53935">*</span></label>
+            <input type="text" id="lastName" name="Last Name" placeholder="Last name" />
+            <span class="error-msg" id="err-lastName"></span>
+          </div>
+
+          <div class="field full">
+            <label for="email">Corporate Email <span style="color:#e53935">*</span></label>
+            <input type="email" id="email" name="Email" placeholder="you@company.com" />
+            <span class="error-msg" id="err-email"></span>
+          </div>
+
+          <div class="field full">
+            <label for="phone">Phone <span style="color:#e53935">*</span></label>
+            <input type="tel" id="phone" name="Phone" placeholder="10-digit mobile number" maxlength="10" />
+            <span class="error-msg" id="err-phone"></span>
+          </div>
+
+          <div class="field full">
+            <label for="description">What are you looking for?</label>
+            <textarea id="description" name="Description" placeholder="Tell us about your requirement…"></textarea>
+            <span class="error-msg" id="err-description"></span>
+          </div>
+        </div>
+
+        <!-- hidden Zoho fields -->
+        <input type="hidden" name="xnQsjsdp" value="082b0a342b78173933b76f425d404162140c118b2a89d2150ed82caaf56acd8c" />
+        <input type="hidden" name="zc_gad" value="" />
+        <input type="hidden" name="xmIwtLD" value="51d08c41d2ec182a8a3c0f4b1f682a10d47e09c6edf41aa08ac36ad8a66c007f" />
+        <input type="hidden" name="actionType" value="TGVhZHM=" />
+        <input type="hidden" name="te" value="true" />
+        <input type="hidden" name="rw" value="e20c7de6d95496963a749d30b9458c995e93be5bf912687a0a94423a3c6192817368b592fc8178a1b90b034da7cd5f8e" />
+        <input type="hidden" name="la" value="0cf464d6861a382a9253d18d89c2e6e5" />
+        <input type="hidden" name="eo" value="62ab92b8890d25de05b6c4e5ce0d03e1" />
+        <input type="hidden" name="returnURL" value="https://anscerrobotics-my.sharepoint.com/:f:/g/personal/raghu_anscer_com/Ek_AQQy3M0xKr1Dtp83oncMBI0wDx9WiB5dn0A4sMt1g-Q?e=4f28sg" />
+
+        <button type="submit" id="btnSubmit" class="btn-primary">Download Flyer</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const REDIRECT_URL = "https://anscerrobotics-my.sharepoint.com/:f:/g/personal/raghu_anscer_com/Ek_AQQy3M0xKr1Dtp83oncMBI0wDx9WiB5dn0A4sMt1g-Q?e=4f28sg";
+
+    // ── skip logic ──────────────────────────────────────────────
+    const skipCheck = document.getElementById("skipCheck");
+    const btnSkip   = document.getElementById("btnSkip");
+    const imsForm   = document.getElementById("imsForm");
+
+    skipCheck.addEventListener("change", () => {
+      if (skipCheck.checked) {
+        btnSkip.classList.remove("d-none");
+        imsForm.classList.add("d-none");
+      } else {
+        btnSkip.classList.add("d-none");
+        imsForm.classList.remove("d-none");
+      }
+    });
+
+    btnSkip.addEventListener("click", () => {
+      window.location.href = REDIRECT_URL;
+    });
+
+    // ── validation ───────────────────────────────────────────────
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function validate(values) {
+      const errs = {};
+
+      if (!values.firstName || values.firstName.length < 3)
+        errs.firstName = "First Name must be at least 3 characters.";
+      else if (values.firstName.length > 255)
+        errs.firstName = "First Name must be at most 255 characters.";
+
+      if (!values.lastName || values.lastName.length < 3)
+        errs.lastName = "Last Name must be at least 3 characters.";
+      else if (values.lastName.length > 255)
+        errs.lastName = "Last Name must be at most 255 characters.";
+
+      if (values.company && values.company.length > 255)
+        errs.company = "Company must be at most 255 characters.";
+
+      if (!values.email)
+        errs.email = "Email is required.";
+      else if (!EMAIL_RE.test(values.email))
+        errs.email = "Please enter a valid email address.";
+
+      if (!values.phone)
+        errs.phone = "Phone is required.";
+      else if (!/^\d{10}$/.test(values.phone))
+        errs.phone = "Phone must be exactly 10 digits.";
+
+      return Object.keys(errs).length ? errs : null;
+    }
+
+    function clearErrors() {
+      ["firstName", "lastName", "company", "email", "phone", "description"].forEach(id => {
+        const input = document.getElementById(id);
+        const err   = document.getElementById("err-" + id);
+        if (input) input.classList.remove("invalid");
+        if (err)   err.textContent = "";
+      });
+    }
+
+    function showErrors(errs) {
+      Object.entries(errs).forEach(([id, msg]) => {
+        const input = document.getElementById(id);
+        const err   = document.getElementById("err-" + id);
+        if (input) input.classList.add("invalid");
+        if (err)   err.textContent = msg;
+      });
+    }
+
+    // clear individual field error on input
+    ["firstName", "lastName", "company", "email", "phone", "description"].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", () => {
+        el.classList.remove("invalid");
+        const errEl = document.getElementById("err-" + id);
+        if (errEl) errEl.textContent = "";
+      });
+    });
+
+    // ── submit ───────────────────────────────────────────────────
+    imsForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const values = {
+        firstName:   document.getElementById("firstName").value.trim(),
+        lastName:    document.getElementById("lastName").value.trim(),
+        company:     document.getElementById("company").value.trim(),
+        email:       document.getElementById("email").value.trim(),
+        phone:       document.getElementById("phone").value.trim(),
+        description: document.getElementById("description").value.trim(),
+      };
+
+      const errs = validate(values);
+      if (errs) { showErrors(errs); return; }
+
+      const btn = document.getElementById("btnSubmit");
+      btn.disabled = true;
+      btn.textContent = "Submitting…";
+
+      // build form-encoded body
+      const body = new URLSearchParams();
+      body.append("xnQsjsdp", "082b0a342b78173933b76f425d404162140c118b2a89d2150ed82caaf56acd8c");
+      body.append("zc_gad", "");
+      body.append("xmIwtLD", "51d08c41d2ec182a8a3c0f4b1f682a10d47e09c6edf41aa08ac36ad8a66c007f");
+      body.append("actionType", "TGVhZHM=");
+      body.append("First Name", values.firstName);
+      body.append("Last Name", values.lastName);
+      body.append("Company", values.company);
+      body.append("Email", values.email);
+      body.append("Phone", values.phone);
+      body.append("Description", values.description);
+      body.append("te", "true");
+      body.append("rw", "e20c7de6d95496963a749d30b9458c995e93be5bf912687a0a94423a3c6192817368b592fc8178a1b90b034da7cd5f8e");
+      body.append("la", "0cf464d6861a382a9253d18d89c2e6e5");
+      body.append("eo", "62ab92b8890d25de05b6c4e5ce0d03e1");
+
+      try {
+        await fetch("https://crm.zoho.com/crm/WebToLeadForm", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: body.toString(),
+          mode: "no-cors",   // Zoho doesn't return CORS headers; fire-and-forget
+        });
+      } catch (_) {
+        // network error — still redirect so user isn't blocked
+      } finally {
+        window.location.href = REDIRECT_URL;
+      }
+    });
+  </script>
+</body>
+</html>
